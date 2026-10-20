@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>第一課 水陸小高手｜語音互動複習完整版</title>
+<style>
+  :root{--bg:#f5fbff;--card:#ffffff;--ink:#17324d;--accent:#2a6f97;--soft:#dceef8;--ok:#1b7f5c;--bad:#b23a48;--warn:#fff2b8;}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Noto Sans TC","Microsoft JhengHei",sans-serif;background:var(--bg);color:var(--ink);}
+  .wrap{max-width:920px;margin:0 auto;padding:22px;}
+  h1{font-size:34px;margin:4px 0 8px;text-align:center;}
+  .sub{font-size:20px;text-align:center;margin-bottom:18px;line-height:1.6;}
+  .topbar{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-bottom:16px;}
+  .pill{background:var(--soft);padding:10px 16px;border-radius:999px;font-size:18px;font-weight:700;}
+  .card{background:var(--card);border-radius:22px;padding:28px;box-shadow:0 8px 28px rgba(39,78,108,.12);}
+  .part{font-size:23px;color:var(--accent);font-weight:900;margin-bottom:10px;}
+  .qnum{font-size:20px;font-weight:700;margin-bottom:8px;}
+  .hint{display:inline-block;background:var(--warn);border-radius:999px;padding:6px 12px;font-size:18px;font-weight:800;margin:2px 0 12px;}
+  .qrow{display:flex;align-items:flex-start;gap:12px;}
+  .question{font-size:30px;line-height:1.5;font-weight:800;flex:1;}
+  button{font-family:inherit;}
+  .speak{border:0;background:#fff3c4;border-radius:14px;font-size:24px;padding:10px 14px;cursor:pointer;box-shadow:0 2px 7px rgba(0,0,0,.08);}
+  .speak:hover{transform:translateY(-1px)}
+  .options{margin-top:22px;display:grid;gap:14px;}
+  .opt{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;border:3px solid #c9dce8;background:#fff;border-radius:18px;padding:16px 16px;}
+  .optbutton{border:0;background:transparent;text-align:left;font-size:26px;line-height:1.45;font-weight:700;color:var(--ink);cursor:pointer;padding:4px;width:100%;}
+  .opt:hover{border-color:#78a9c7;background:#f7fcff;}
+  .opt.selected{border-color:var(--accent);background:#eaf6fc;}
+  .opt.correct{border-color:var(--ok);background:#e9f8f1;}
+  .opt.wrong{border-color:var(--bad);background:#fff0f2;}
+  .actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:18px;}
+  .check,.next{border:0;color:white;font-size:23px;font-weight:800;padding:13px 25px;border-radius:16px;cursor:pointer;}
+  .check{background:#d97706;}
+  .next{display:none;background:var(--accent);}
+  .feedback{min-height:44px;font-size:25px;font-weight:800;margin-top:18px;text-align:center;line-height:1.5;}
+  .start,.restart{display:block;margin:24px auto 0;border:0;background:var(--accent);color:#fff;font-size:26px;font-weight:800;padding:16px 32px;border-radius:18px;cursor:pointer;}
+  .intro ul{font-size:22px;line-height:1.85;max-width:720px;margin:14px auto;}
+  .result{text-align:center;display:none;}
+  .score{font-size:48px;font-weight:900;color:var(--accent);margin:10px 0;}
+  .small{font-size:18px;color:#4b6475;line-height:1.6;}
+  .progress{height:14px;background:#d8e8f1;border-radius:999px;overflow:hidden;margin:14px 0 22px;}
+  .bar{height:100%;width:0;background:#5fa8d3;transition:width .25s ease;}
+  @media(max-width:620px){.wrap{padding:12px}.card{padding:18px}.question{font-size:25px}.optbutton{font-size:23px}h1{font-size:29px}.sub{font-size:18px}.pill{font-size:16px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>第一課　水陸小高手</h1>
+  <div class="sub">期中考語音互動複習<br>每一題、每一個選項都可以按 🔊 聽語音</div>
+  <div class="topbar">
+    <div class="pill">共 22 題</div>
+    <div class="pill">課文理解 12 題</div>
+    <div class="pill">語詞理解 10 題</div>
+  </div>
+  <div class="progress"><div class="bar" id="bar"></div></div>
+
+  <div class="card intro" id="intro">
+    <div class="part">準備開始</div>
+    <ul>
+      <li>先按 🔊 聽題目。</li>
+      <li>每個答案旁邊也有 🔊，不會讀字也沒關係。</li>
+      <li>有些題目可以複選，畫面會提醒你。</li>
+      <li>選好答案後，按「確認答案」。</li>
+    </ul>
+    <button class="start" onclick="startQuiz()">開始作答</button>
+  </div>
+
+  <div class="card" id="quiz" style="display:none">
+    <div class="part" id="part"></div>
+    <div class="qnum" id="qnum"></div>
+    <div class="hint" id="hint" style="display:none">本題可以複選</div>
+    <div class="qrow">
+      <div class="question" id="question"></div>
+      <button class="speak" id="speakQ" aria-label="播放題目">🔊</button>
+    </div>
+    <div class="options" id="options"></div>
+    <div class="feedback" id="feedback"></div>
+    <div class="actions">
+      <button class="check" id="checkBtn" onclick="checkAnswer()">確認答案</button>
+      <button class="next" id="nextBtn" onclick="nextQuestion()">下一題</button>
+    </div>
+  </div>
+
+  <div class="card result" id="result">
+    <div class="part">完成囉！</div>
+    <div class="score" id="score"></div>
+    <div class="question" style="font-size:27px">你完成第一課全部複習了！</div>
+    <p class="small">可以再做一次，看看能不能比剛才更進步。</p>
+    <button class="restart" onclick="restartQuiz()">再做一次</button>
+  </div>
+</div>
+
+<script>
+const questions = [
+  {part:'第一部分｜課文理解', multi:true,q:'在〈游泳〉裡，小朋友想像自己游成了哪些動物？請選出三個。',options:['自由的魚','巨大的蛙','飛舞的蝶','兇猛的老虎'], answers:[0,1,2]},
+  {part:'第一部分｜課文理解',q:'課文中「歡樂笑聲一陣陣」和什麼一起出現？',options:['晶亮的水珠','黑色的雲','安靜的教室'], answers:[0]},
+  {part:'第一部分｜課文理解', multi:true,q:'「我們在游泳池游呀游」，最後游出了什麼？請選出三個。',options:['無比堅定的自信','大海一般的壯志','多采多姿的人生','很大的煩惱'], answers:[0,1,2]},
+  {part:'第一部分｜課文理解',q:'課文中的小朋友在游泳時，心情比較接近哪一種？',options:['開心、充滿自信','害怕、不敢前進','生氣、不想活動'], answers:[0]},
+  {part:'第一部分｜課文理解',q:'「我們在游泳池游呀游，游出無比＿＿＿＿的自信。」空格裡應該放哪一個詞？',options:['堅定','緩緩','煩惱'], answers:[0]},
+  {part:'第一部分｜課文理解',q:'〈溜直排輪〉這首詩主要寫作者在做什麼運動？',options:['溜直排輪','游泳','踢足球'], answers:[0]},
+  {part:'第一部分｜課文理解',q:'〈溜直排輪〉裡，風兒從哪裡「呼呼吹過」？',options:['耳旁','手上','屋頂'], answers:[0]},
+  {part:'第一部分｜課文理解', multi:true,q:'作者先後把自己想像成什麼？請選出兩個。',options:['飛鷹','陀螺','袋鼠','小魚'], answers:[0,1]},
+  {part:'第一部分｜課文理解',q:'請選出課文中正確的動作順序。',options:['滑行後加速，轉身後跳躍','滑行後睡覺，轉身後游泳','滑行後停止，轉身後坐下'], answers:[0]},
+  {part:'第一部分｜課文理解',q:'〈溜直排輪〉裡，「所有的煩惱」最後怎麼了？',options:['全都被風帶走','一直跟著我','變得更多'], answers:[0]},
+  {part:'第一部分｜課文理解',q:'〈溜直排輪〉裡，「所有的快樂」最後怎麼了？',options:['緊緊跟隨著我','被風吹走','不見了'], answers:[0]},
+  {part:'第一部分｜課文理解',q:'從「煩惱被風帶走、快樂緊緊跟隨」可以看出，作者溜直排輪時的心情比較接近哪一種？',options:['開心、輕鬆','生氣、難過','害怕、緊張'], answers:[0]},
+  {part:'第二部分｜語詞理解',q:'「游泳」是什麼意思？',options:['人在水中用不同姿勢划水前進的運動','穿著鞋子在地上滑動','在天空自由飛行'], answers:[0]},
+  {part:'第二部分｜語詞理解',q:'「一般」在「這兩個男孩看起來一般高」這句話裡，是什麼意思？',options:['一樣、同等','非常緩慢','非常煩惱'], answers:[0]},
+  {part:'第二部分｜語詞理解',q:'「多采多姿」比較接近哪一個意思？',options:['內容豐富、變化很多','只有一種樣子','很安靜、沒有活動'], answers:[0]},
+  {part:'第二部分｜語詞理解',q:'「滑行」是什麼意思？',options:['滑動著向前進','快速往上跳','站在原地不動'], answers:[0]},
+  {part:'第二部分｜語詞理解',q:'「遨遊」是什麼意思？',options:['自由自在地遊歷、玩賞','慢慢地睡覺','很生氣地奔跑'], answers:[0]},
+  {part:'第二部分｜語詞理解',q:'「緩緩」是什麼意思？',options:['緩慢、慢慢','非常快速','很用力'], answers:[0]},
+  {part:'第二部分｜語詞理解',q:'一種會在地上直立旋轉的玩具，叫做什麼？',options:['陀螺','地毯','直排輪'], answers:[0]},
+  {part:'第二部分｜語詞理解',q:'「轉身」是什麼意思？',options:['把身體轉向另一個方向','把身體躺下休息','把東西丟到空中'], answers:[0]},
+  {part:'第二部分｜語詞理解',q:'「水陸」指的是什麼？',options:['水上與陸地上的交通或環境','只有天空中的環境','只有教室裡的環境'], answers:[0]},
+  {part:'第二部分｜語詞理解',q:'「煩惱」是什麼意思？',options:['煩悶、不快活的情緒','非常開心的感覺','自由自在的活動'], answers:[0]}
+];
+const orders = [[2,0,3,1],[1,2,0],[3,1,0,2],[2,0,1],[1,0,2],[2,0,1],[1,2,0],[2,0,3,1],[1,0,2],[2,1,0],[1,0,2],[2,0,1],[1,2,0],[2,0,1],[1,0,2],[2,1,0],[1,2,0],[2,0,1],[1,0,2],[2,1,0],[1,2,0],[2,0,1]];
+const quizData = questions.map((item,i)=>{const ord=orders[i];const opts=ord.map(idx=>item.options[idx]);const correctTexts=item.answers.map(a=>item.options[a]);const newAnswers=correctTexts.map(t=>opts.indexOf(t)).sort((a,b)=>a-b);return {...item, options:opts, answers:newAnswers};});
+let current=0, score=0, answered=false, selected=[];
+function speak(text){if(!('speechSynthesis' in window)){alert('這個瀏覽器目前不支援語音播放，建議使用 Chrome 或 Edge。');return;}window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang='zh-TW';u.rate=0.82;u.pitch=1;const voices=window.speechSynthesis.getVoices();const tw=voices.find(v=>/zh-TW/i.test(v.lang)) || voices.find(v=>/^zh/i.test(v.lang));if(tw) u.voice=tw;window.speechSynthesis.speak(u);}
+function startQuiz(){document.getElementById('intro').style.display='none';document.getElementById('quiz').style.display='block';current=0; score=0; render();}
+function render(){answered=false; selected=[];const item=quizData[current];document.getElementById('part').textContent=item.part;document.getElementById('qnum').textContent=`第 ${current+1} 題／共 ${quizData.length} 題`;document.getElementById('question').textContent=item.q;document.getElementById('hint').style.display=item.multi?'inline-block':'none';document.getElementById('speakQ').onclick=()=>speak(item.multi ? item.q+'，本題可以複選。' : item.q);document.getElementById('feedback').textContent='';document.getElementById('checkBtn').style.display='inline-block';document.getElementById('nextBtn').style.display='none';document.getElementById('nextBtn').textContent=current===quizData.length-1?'看成績':'下一題';document.getElementById('bar').style.width=`${(current/quizData.length)*100}%`;const box=document.getElementById('options');box.innerHTML='';item.options.forEach((opt,idx)=>{const row=document.createElement('div');row.className='opt';row.dataset.idx=idx;const choose=document.createElement('button');choose.className='optbutton';choose.textContent=`${String.fromCharCode(65+idx)}．${opt}`;choose.onclick=()=>toggleAnswer(idx,row,item.multi);const audio=document.createElement('button');audio.className='speak';audio.setAttribute('aria-label','播放選項');audio.textContent='🔊';audio.onclick=(e)=>{e.stopPropagation();speak(opt);};row.appendChild(choose); row.appendChild(audio); box.appendChild(row);});setTimeout(()=>speak(item.multi ? item.q+'，本題可以複選。' : item.q),350);}
+function toggleAnswer(idx,row,multi){if(answered) return;if(multi){if(selected.includes(idx)){selected=selected.filter(x=>x!==idx);row.classList.remove('selected');}else{selected.push(idx);row.classList.add('selected');}}else{selected=[idx];document.querySelectorAll('.opt').forEach(r=>r.classList.remove('selected'));row.classList.add('selected');}}
+function sameArray(a,b){const x=[...a].sort((m,n)=>m-n), y=[...b].sort((m,n)=>m-n);return x.length===y.length && x.every((v,i)=>v===y[i]);}
+function checkAnswer(){if(answered) return;if(selected.length===0){document.getElementById('feedback').textContent='請先選一個答案喔！';speak('請先選一個答案喔。');return;}answered=true;const item=quizData[current];const rows=[...document.querySelectorAll('.opt')];const correct=sameArray(selected,item.answers);rows.forEach((row,idx)=>{if(item.answers.includes(idx)) row.classList.add('correct');else if(selected.includes(idx)) row.classList.add('wrong');});if(correct){score++;document.getElementById('feedback').textContent='答對了！很棒！';speak('答對了，很棒！');}else{const correctText=item.answers.map(i=>item.options[i]).join('、');document.getElementById('feedback').textContent=`正確答案是：${correctText}`;speak(`正確答案是，${correctText}`);}document.getElementById('checkBtn').style.display='none';document.getElementById('nextBtn').style.display='inline-block';}
+function nextQuestion(){if(current<quizData.length-1){current++; render();} else finish();}
+function finish(){document.getElementById('quiz').style.display='none';document.getElementById('result').style.display='block';document.getElementById('bar').style.width='100%';document.getElementById('score').textContent=`${score}／${quizData.length} 題`;speak(`完成了。你答對 ${score} 題，總共有 ${quizData.length} 題。`);}
+function restartQuiz(){document.getElementById('result').style.display='none';document.getElementById('quiz').style.display='block';current=0;score=0;render();}
+</script>
+</body>
+</html>
